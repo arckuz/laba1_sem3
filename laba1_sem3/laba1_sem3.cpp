@@ -39,6 +39,7 @@ private:
         }
         return res;
     }
+
     void input_b(int s) {
         xb = s;
         random_device rd;
@@ -46,6 +47,7 @@ private:
         uniform_int_distribution<> dist(2, p - 1);
         xa = dist(gen);
     }
+
     string encryption(string str, int key) {
         string res="";
         for (auto i : str) {
@@ -61,6 +63,8 @@ public:
         cin >> ya;
         cout << "Введите xb: ";
         cin >> xb;
+        cout << "Введите p: ";
+        cin >> p;
         int key = ost(ya, xb, p);
         string text;
         cin.get();
@@ -69,7 +73,7 @@ public:
         cout << decryption(text, key);
     }
 private:
-    int p=853;
+    int p = 0;
     int ya = 0;
     int xb = 0;
     int ost(int a, int x, int n) {
