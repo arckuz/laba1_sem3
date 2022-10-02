@@ -25,10 +25,6 @@ public:
         yb = ost(g, xb, p);
         key = ost(yb, xa, p);
         cout << encryption(text, key);
-        ofstream out;
-        out.open("strings_enc.txt");
-        out << encryption(text, key);
-        out.close();
     }
 private:
     int xa;
@@ -70,24 +66,15 @@ public:
         cin >> xb;
         cout << "Введите p: ";
         cin >> p;
+
+
         int key = ost(ya, xb, p);
         string text;
+
         cin.get();
         cout << "Сообщение для расшифровки: ";
-
-        ifstream fin("strings_enc.txt");
-        getline(fin, text);
-        cout << text << endl;
-        fin.close();
-
-
+        getline(cin, text);
         cout << decryption(text, key);
-
-
-        ofstream out;
-        out.open("strings_dec.txt");
-        out << decryption(text, key);
-        out.close();
 
     }
 private:
@@ -116,16 +103,8 @@ int main()
     SetConsoleOutputCP(1251);
     string str;
     cout << "Сообщение для шифровки: ";
-    //getline(cin, str);
+    getline(cin, str);
 
-    //setlocale(LC_ALL, "ru");
-
-
-    ifstream fin("strings_in.txt");
-    getline(fin, str);
-
-    cout << str<< endl;
-    fin.close();
 
 
     Dh_Enc dh_e;
