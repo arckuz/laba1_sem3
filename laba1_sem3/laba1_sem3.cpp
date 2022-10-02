@@ -4,6 +4,7 @@
 #include <string>
 #include <clocale>
 #include <Windows.h>
+#include <fstream>
 using namespace std;
 
 class Dh_Enc {
@@ -24,6 +25,10 @@ public:
         yb = ost(g, xb, p);
         key = ost(yb, xa, p);
         cout << encryption(text, key);
+        ofstream out;
+        out.open("strings_enc.txt");
+        out << encryption(text, key);
+        out.close();
     }
 private:
     int xa;
@@ -68,9 +73,22 @@ public:
         int key = ost(ya, xb, p);
         string text;
         cin.get();
-        cout << "Введите сообщение, которое хотите расшифровать: ";
-        getline(cin, text);
+        cout << "Сообщение для расшифровки: ";
+
+        ifstream fin("strings_enc.txt");
+        getline(fin, text);
+        cout << text << endl;
+        fin.close();
+
+
         cout << decryption(text, key);
+
+
+        ofstream out;
+        out.open("strings_dec.txt");
+        out << decryption(text, key);
+        out.close();
+
     }
 private:
     int p = 0;
@@ -97,15 +115,17 @@ int main()
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
     string str;
-    cout << "Введите сообщение, которое хотите зашифровать: ";
-    getline(cin, str);
+    cout << "Сообщение для шифровки: ";
+    //getline(cin, str);
+
+    //setlocale(LC_ALL, "ru");
 
 
+    ifstream fin("strings_in.txt");
+    getline(fin, str);
 
-
-
-
-
+    cout << str<< endl;
+    fin.close();
 
 
     Dh_Enc dh_e;
