@@ -310,7 +310,7 @@ private:
     int64_t gen_prost() {
         random_device rd;
         ranlux24_base gen(rd());
-        uniform_int_distribution<> dist(100,500);
+        uniform_int_distribution<> dist(1000,10000);
         while (true) {
             int64_t p = dist(gen);
             int64_t i;
@@ -391,7 +391,7 @@ int main()
     string str;
     cout << "Сообщение для шифровки: ";
     getline(cin, str);
-
+    
 
     RSA_Enc rsa_e;
     rsa_e.rsa_e(str);
