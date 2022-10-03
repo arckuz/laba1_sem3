@@ -50,6 +50,7 @@ private:
         return res;
     }
 };
+
 class Dh_Dec {
 public:
     void DifHelm_decr() {
@@ -90,6 +91,7 @@ private:
         return res;
     }
 };
+
 class El_Gamal_Enc {
 public:
     long int p;
@@ -133,12 +135,7 @@ private:
             }
         }
     }
-    void gen_g(long int& g) {
-        random_device rd;
-        ranlux24_base gen(rd());
-        uniform_int_distribution<> dist(2, p-1);
-        g = dist(gen);
-    }
+
     int step(int a, long int x, int p) {
         int y;
         y = x % (p - 1);
@@ -151,6 +148,7 @@ private:
         }
         return t;
     }
+
     int step_with_numb(int Y, int k, int M, int p) {
         int q, q0;
         q = Y % p;
@@ -161,6 +159,7 @@ private:
         q = (q * M) % p;
         return q;
     }
+
     int nod(int a, int b) {
         while (b != 0) {
             a %= b;
@@ -168,6 +167,7 @@ private:
         }
         return a;
     }
+
     int vzaim_prost(int p) {
         random_device rd;
         ranlux24_base gen(rd());
@@ -179,6 +179,7 @@ private:
             }
         }
     }
+
     void encryption(long int p, long int g, long int Y, string message, vector<pair<long int, long int>>& encoded_message) {
         for (auto i : message) {
             int M = int(i);
@@ -190,7 +191,15 @@ private:
         }
         cout << endl;
     }
+
+    void gen_g(long int& g) {
+        random_device rd;
+        ranlux24_base gen(rd());
+        uniform_int_distribution<> dist(2, p - 1);
+        g = dist(gen);
+    }
 };
+
 class El_Gamal_Dec {
 public:
     long int p;
@@ -251,6 +260,130 @@ private:
     }
 };
 
+class RSA_Enc {
+public:
+    int64_t p;                                       
+    int64_t q;                                       
+    int64_t e;                                       
+    void rsa_e(string text) {
+
+        cout << "Зашифрованное сообщение: ";
+
+        rsa_alg();
+        enc(text);
+
+        cout << "\nКлючи для расшифровки: d = " << d << ", n = " << n << endl;
+        dec();
+    }
+private:  
+
+    int64_t n;                                       
+    int64_t f;
+    int64_t d;
+    vector<int64_t> vec;
+
+    void dec() {
+        for (auto i : vec) {
+            int64_t m = ost(i, d, n);
+            cout << char(m);
+        }
+    }
+
+    void enc(string text) {
+        for (auto i : text) {
+            int64_t m = int(i);
+            int64_t c = ost(m, e, n);
+            cout << c << " ";
+            vec.push_back(c);
+        }
+    }
+
+    void rsa_alg() {
+        p = gen_prost();
+        q = gen_prost();
+        n = p * q;
+        f = (p - 1) * (q - 1);
+        e = vzaim_prost(f);
+        d = obrat(e, f);
+    }
+
+    int64_t gen_prost() {
+        random_device rd;
+        ranlux24_base gen(rd());
+        uniform_int_distribution<> dist(100,500);
+        while (true) {
+            int64_t p = dist(gen);
+            int64_t i;
+            for (i = 2; i < p / 2; i++) {
+                if (p % i == 0) {
+                    break;
+                }
+            }
+            if (i == p / 2) {
+                return p;
+            }
+        }
+    }
+
+    int64_t obrat(int64_t b, int64_t a) {
+        int64_t x = 1, y = 0, x1 = 0, y1 = 1, x2 = 0, y2 = 0, q = 0, r = 1, a1;
+        a1 = a;
+
+        while (r != 0) {
+            q = a / b;
+            r = a % b;
+            x2 = x - q * x1;
+            y2 = y - q * y1;
+            x = x1;
+            y = y1;
+            x1 = x2;
+            y1 = y2;
+            a = b;
+            b = r;
+
+        }
+        if (y < 0) {
+            y = y + a1;
+        }
+  
+        return y;
+    }
+
+    int64_t nod(int64_t a, int64_t b) {
+        while (b != 0) {
+            a %= b;
+            swap(a, b);
+        }
+        return a;
+    }
+
+    int64_t vzaim_prost(int64_t p) {
+        random_device rd;
+        ranlux24_base gen(rd());
+        uniform_int_distribution<> dist(2, p - 1);
+        while (true) {
+            int64_t k = dist(gen);
+            if (nod(k, p - 1) == 1) {
+                return k;
+            }
+        }
+    }
+
+    int64_t ost(int64_t a0, int64_t x0, int64_t p0) {
+        int64_t a = a0, x = x0, q = 1, p = p0;
+        while (x > 0) {
+            if (x % 2 == 0) {
+                x /= 2;
+                a = (a * a) % p;
+            }
+            else {
+                x--;
+                q = (a * q) % p;
+            }
+        }
+        return q;
+    }
+};
 int main()
 {
     SetConsoleCP(1251);
@@ -259,13 +392,24 @@ int main()
     cout << "Сообщение для шифровки: ";
     getline(cin, str);
 
-    El_Gamal_Enc el_enc;
 
-    el_enc.El_Gamal_e(str);
+    RSA_Enc rsa_e;
+    rsa_e.rsa_e(str);
 
-    El_Gamal_Dec el_dec;
 
-    el_dec.El_Gamal_d();
+
+
+
+
+
+
+    //El_Gamal_Enc el_enc;
+
+    //el_enc.El_Gamal_e(str);
+
+    //El_Gamal_Dec el_dec;
+
+    //el_dec.El_Gamal_d();
 
 
 
