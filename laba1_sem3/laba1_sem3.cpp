@@ -250,6 +250,7 @@ private:
         }
     }
 };
+
 int main()
 {
     SetConsoleCP(1251);
