@@ -430,20 +430,132 @@ private:
         }
     }
 };
+
+class Shamir_Enc {
+public:
+    int64_t p = 51;               
+    int64_t m = 14;
+    int64_t x1, x2, x3, x4;
+    void shamir_alg() {
+        p = gen_p();
+        ca = vzaim_prost(p);
+        cb = vzaim_prost(p);
+        da = obrat(ca, p);
+        db = obrat(cb, p);
+        x1 = ost(m, ca, p);
+        x2 = ost(x1, cb, p);
+        x3 = ost(x2, da, p);
+        x4 = ost(x3, db, p);
+        cout <<" m = " << m << " p = " << p << " ca = " << ca << " cb = " << cb << " da = " << da << " db = " << db << " x1 = " << x1 << " x2 = " << x2 << " x3 = " << x3 << " x4 = " << x4 << endl;
+    }
+private:
+    int64_t ca=1;             
+    int64_t da=2;             
+    int64_t cb;           
+    int64_t db;             
+
+    int64_t gen_p() {
+        random_device rd;
+        ranlux24_base gen(rd());
+        uniform_int_distribution<> dist(10000, 400000);
+        while (true) {
+            int64_t p = dist(gen);
+            int64_t i;
+            for (i = 2; i < p / 2; i++) {
+                if (p % i == 0) {
+                    break;
+                }
+            }
+            if (i == p / 2) {
+                return p;
+            }
+        }
+    }
+
+    int64_t nod(int64_t a, int64_t b) {
+        while (b != 0) {
+            a %= b;
+            swap(a, b);
+        }
+        return a;
+    }
+
+    int64_t vzaim_prost(int64_t& p) {
+        random_device rd;
+        ranlux24_base gen(rd());
+        uniform_int_distribution<> dist(2, p - 1);
+        while (true) {
+            int64_t k = dist(gen);
+            if (nod(k, p - 1) == 1) {
+                return k;
+            }
+            k--;
+        }
+    }
+
+    int64_t obrat(int64_t b, int64_t a) {
+        int64_t x = 1, y = 0, x1 = 0, y1 = 1, x2 = 0, y2 = 0, q = 0, r = 1, a1;
+        a1 = a;
+
+        while (r != 0) {
+            q = a / b;
+            r = a % b;
+            x2 = x - q * x1;
+            y2 = y - q * y1;
+            x = x1;
+            y = y1;
+            x1 = x2;
+            y1 = y2;
+            a = b;
+            b = r;
+
+        }
+        if (y < 0) {
+            y = y + a1;
+        }
+
+        return y;
+    }
+
+    int64_t ost(int64_t a0, int64_t x0, int64_t p0) {
+        int64_t a = a0, x = x0, q = 1, p = p0;
+        while (x > 0) {
+            if (x % 2 == 0) {
+                x /= 2;
+                a = (a * a) % p;
+            }
+            else {
+                x--;
+                q = (a * q) % p;
+            }
+        }
+        return q;
+    }
+};
 int main()
 {
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
     string str;
-    cout << "Сообщение для шифровки: ";
-    getline(cin, str);
+    //cout << "Сообщение для шифровки: ";
+    //getline(cin, str);
     
 
-    RSA_Enc rsa_e;
+
+    Shamir_Enc sham;
+    sham.shamir_alg();
+
+
+
+
+
+
+
+    /*RSA_Enc rsa_e;
     rsa_e.rsa_e(str);
 
     RSA_Dec rsa_d;
-    rsa_d.rsa_dec();
+    rsa_d.rsa_dec();*/
 
 
 
