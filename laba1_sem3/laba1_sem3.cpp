@@ -273,34 +273,26 @@ public:
         enc(text);
 
         cout << "\nКлючи для расшифровки: d = " << d << ", n = " << n << endl;
-        dec();
     }
 private:  
 
     int64_t n;                                       
     int64_t f;
     int64_t d;
-    vector<int64_t> vec;
-
-    void dec() {
-        for (auto i : vec) {
-            int64_t m = ost(i, d, n);
-            cout << char(m);
-        }
-    }
 
     void enc(string text) {
         for (auto i : text) {
             int64_t m = int(i);
             int64_t c = ost(m, e, n);
             cout << c << " ";
-            vec.push_back(c);
         }
     }
 
     void rsa_alg() {
         p = gen_prost();
         q = gen_prost();
+        p = 15727;
+        q = 32707;
         n = p * q;
         f = (p - 1) * (q - 1);
         e = vzaim_prost(f);
@@ -310,7 +302,7 @@ private:
     int64_t gen_prost() {
         random_device rd;
         ranlux24_base gen(rd());
-        uniform_int_distribution<> dist(1000,10000);
+        uniform_int_distribution<> dist(1000,40000);
         while (true) {
             int64_t p = dist(gen);
             int64_t i;
@@ -363,7 +355,7 @@ private:
         uniform_int_distribution<> dist(2, p - 1);
         while (true) {
             int64_t k = dist(gen);
-            if (nod(k, p - 1) == 1) {
+            if (nod(k, p) == 1) {
                 return k;
             }
         }
@@ -384,6 +376,60 @@ private:
         return q;
     }
 };
+
+class RSA_Dec {
+public:
+    vector<int64_t> message;
+    string text;
+
+    void rsa_dec() {
+        cout << "Введите ключ d: ";
+        cin >> d;
+        cout << "Введите ключ n: ";
+        cin >> n;
+        cin.get();
+        cout << "Введите текст для расшифровки: ";
+        getline(cin, text);
+        text += " ";
+        preobr(text, message);
+        decryption();
+    }
+private:
+    int64_t d;
+    int64_t n;
+    int64_t ost(int64_t a0, int64_t x0, int64_t p0) {
+        int64_t a = a0, x = x0, q = 1, p = p0;
+        while (x > 0) {
+            if (x % 2 == 0) {
+                x /= 2;
+                a = (a * a) % p;
+            }
+            else {
+                x--;
+                q = (a * q) % p;
+            }
+        }
+        return q;
+    }
+    void decryption() {
+        for (auto i : message) {
+            int64_t m = ost(i, d, n);
+            cout << char(m);
+        }
+    }
+    void preobr(string text, vector<int64_t>& message) {
+        string str="";
+        for (auto i : text) {
+            if (i != ' ') {
+                str += i;
+            }
+            else {
+                message.push_back(stoi(str));
+                str = "";
+            }
+        }
+    }
+};
 int main()
 {
     SetConsoleCP(1251);
@@ -396,7 +442,8 @@ int main()
     RSA_Enc rsa_e;
     rsa_e.rsa_e(str);
 
-
+    RSA_Dec rsa_d;
+    rsa_d.rsa_dec();
 
 
 
