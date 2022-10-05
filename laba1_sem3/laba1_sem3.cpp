@@ -433,13 +433,13 @@ private:
 
 class Shamir_Enc {
 public:
-    int64_t p = 51;               
-    int64_t m = 14;
+    int64_t p;               
+    int64_t m = 147;
     int64_t x1, x2, x3, x4;
     void shamir_alg() {
         p = gen_p();
-        ca = vzaim_prost(p);
-        cb = vzaim_prost(p);
+        ca = vzaim_prost(p - 1);
+        cb = vzaim_prost(p - 1);
         da = obrat(ca, p);
         db = obrat(cb, p);
         x1 = ost(m, ca, p);
@@ -447,10 +447,11 @@ public:
         x3 = ost(x2, da, p);
         x4 = ost(x3, db, p);
         cout <<" m = " << m << " p = " << p << " ca = " << ca << " cb = " << cb << " da = " << da << " db = " << db << " x1 = " << x1 << " x2 = " << x2 << " x3 = " << x3 << " x4 = " << x4 << endl;
+
     }
 private:
-    int64_t ca=1;             
-    int64_t da=2;             
+    int64_t ca;             
+    int64_t da;             
     int64_t cb;           
     int64_t db;             
 
@@ -480,18 +481,19 @@ private:
         return a;
     }
 
-    int64_t vzaim_prost(int64_t& p) {
+    int64_t vzaim_prost(int64_t p) {
         random_device rd;
         ranlux24_base gen(rd());
-        uniform_int_distribution<> dist(2, p - 1);
+        uniform_int_distribution<> dist(2, p);
         while (true) {
             int64_t k = dist(gen);
-            if (nod(k, p - 1) == 1) {
+            if (nod(p, k) == 1) {
                 return k;
             }
-            k--;
+
         }
     }
+
 
     int64_t obrat(int64_t b, int64_t a) {
         int64_t x = 1, y = 0, x1 = 0, y1 = 1, x2 = 0, y2 = 0, q = 0, r = 1, a1;
